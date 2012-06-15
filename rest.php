@@ -2,12 +2,21 @@
 
 /**
  * Very simple REST Client
+ *
+ * @author Brad Proctor <brad@bradleyproctor.com>
  */
 class Rest
 {
 
 	/**
-	 * Perform the query
+	 * Perform the request
+	 *
+	 * @param array $args
+	 *		url => The url
+	 *		data => Optional data
+	 *
+	 * @return string
+	 *		Returns the output from the remote server
 	 */
 	public static function __callStatic($name, array $args)
 	{
@@ -23,7 +32,6 @@ class Rest
 				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 				break;
 			case 'get':
-				$ch = curl_init($url);
 				break;
 			case 'post':
 				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
