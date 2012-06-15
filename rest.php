@@ -24,22 +24,24 @@ class Rest
 			throw new Exception('Expecting at least 1 parameter');
 		}
 		$data = isset ($args[1]) ? $args[1] : array();
+
+		// Don't attempt to run if curl isn't installed
+		if ( ! function_exists('curl_init')) {
+			throw new Exception('CURL not available');
+		}
+
 		$ch = curl_init($args[0] . ($name == 'get' ? http_build_query($data) : ''));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 		switch ($name) {
 			case 'delete':
-				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-				break;
-			case 'get':
-				break;
 			case 'post':
-				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-				curl_setopt($ch, CURLOPT_POST, true);
-				break;
 			case 'put':
 				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($name));
+				break;
+			case 'get':
 				break;
 			default:
 				throw new Exception('Invalid method');
